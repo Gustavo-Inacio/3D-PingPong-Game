@@ -28,6 +28,15 @@ module.exports = {
     {
         rules:
         [
+
+            {
+                test: /\.(gltf)$/,
+                use: [
+                  {
+                    loader: "gltf-webpack-loader"
+                  }
+                ]
+              },
             // HTML
             {
                 test: /\.(html)$/,
@@ -54,9 +63,19 @@ module.exports = {
                 ]
             },
 
+            {
+                test: /\.(obj)$/,
+                use: {loader:'webpack-obj-loader'}
+            },
+
+            {
+                test: /\.mtl$/,
+                use: {loader: 'mtl-loader'}
+            },
+
             // Images
             {
-                test: /\.(jpg|png|gif|svg)$/,
+                test: /\.(jpeg|jpg|png|gif|svg)$/,
                 use:
                 [
                     {
@@ -82,7 +101,18 @@ module.exports = {
                         }
                     }
                 ]
-            }
-        ]
+            },
+
+            
+              {
+                test: /\.(bin)$/,
+                use: [
+                  {
+                    loader: 'file-loader',
+                    options: {}
+                  }
+                ]
+              }
+        ],
     }
 }
