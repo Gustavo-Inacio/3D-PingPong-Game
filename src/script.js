@@ -95,7 +95,7 @@ scene.add(court.threeGroup);
 
 const court2 = new Court();
 court2.threeGroup.position.set(12,0,0)
-scene.add(court2.threeGroup);
+// scene.add(court2.threeGroup);
 
 const ambient = new THREE.AmbientLight( 0xffffff, 0.1 );
 scene.add( ambient );

@@ -7,14 +7,14 @@ import lampPost from '../assets/model-3d/lamp_post/scene.gltf';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 class LampPost{
-    constructor(color, internsity, pos){
+    constructor(color, internsity, pos, height){
         this.color = color;
         this.internsity = internsity;
         this.pos = pos;
         this.threeLamp = new THREE.Group();
         this.threeLamp.receiveShadow = true;
         this.threeLamp.castShadow = true;
-        this.height = 5;
+        this.height = height;
         
         this.initThree();
     }
@@ -44,8 +44,7 @@ class LampPost{
             const postSize = postBoundingBox.getSize(new THREE.Vector3());
 
             let scaleFactor = this.height / postSize.z;
-            module.scene.scale.set(scaleFactor,scaleFactor,scaleFactor)
-            console.log(postSize)
+            module.scene.scale.set(scaleFactor,scaleFactor,scaleFactor);
 
             module.scene.position.set(0,0, - (postSize.z  * module.scene.scale.z / 2));
             

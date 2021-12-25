@@ -1,0 +1,11 @@
+Model Information:
+* title:	Rabitz Grid Pattern
+* source:	https://sketchfab.com/3d-models/rabitz-grid-pattern-ebbc0b00de1c4144a531ee266d6d3722
+* author:	invisiprim (https://sketchfab.com/invisiprim)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Rabitz Grid Pattern" (https://sketchfab.com/3d-models/rabitz-grid-pattern-ebbc0b00de1c4144a531ee266d6d3722) by invisiprim (https://sketchfab.com/invisiprim) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
