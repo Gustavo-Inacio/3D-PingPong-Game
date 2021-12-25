@@ -2,6 +2,7 @@ import * as THREE from 'three';
 class Field {
     constructor(size, img, pos){
         this.img = img;
+        this.loadedTexture = new THREE.TextureLoader().load(`${this.img.texture}`);
         this.size = size;
         this.height;
         this.pos = pos;
@@ -18,7 +19,7 @@ class Field {
 
         const newPlane = new THREE.Mesh(
             new THREE.PlaneGeometry(planeWidth, planeWidth * fieldRatio),
-            new THREE.MeshPhongMaterial( { color: 0x808080, dithering: true , map: texture} )
+            new THREE.MeshPhongMaterial( { color: 0x808080, dithering: true , map: this.loadedTexture} )
         );
 
         newPlane.receiveShadow = true;

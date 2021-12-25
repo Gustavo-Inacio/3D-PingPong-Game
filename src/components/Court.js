@@ -3,7 +3,6 @@ import Field from './Field';
 import LampPost from './LampPost';
 import fieldImg from '../assets/img/field.svg';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import fenceGLTF from '../assets/model-3d/rabitz_grid/scene.gltf';
 import Fence from './Fence';
 class Court{
     constructor(){
@@ -11,9 +10,10 @@ class Court{
         this.field = new Field(this.fieldSize, {texture: fieldImg}, 10);
         this.lampPosts = {
             quantity: Math.abs(4),
-            height: 3,
+            height: 5,
             lightColor: 0xffffff 
         }
+        this.game;
         this.threeGroup = new THREE.Group();
         this.initThree();
     }
@@ -23,16 +23,14 @@ class Court{
     }
 
     plotFence(){
-        const myGLTFLoader = new GLTFLoader();
-
         const courtBounding  = new THREE.Box3().setFromObject(this.threeGroup);
         const courtSize = courtBounding.getSize(new THREE.Vector3());
 
         const fencePosition = new THREE.Vector3(5,0,0);
-        const fence  = new Fence(fencePosition, courtSize.y, 5 ,courtSize.x );
+        const fence  = new Fence(fencePosition, courtSize.y, this.lampPosts.height ,courtSize.x );
 
         const fencePosition2 = new THREE.Vector3(-5,0,0);
-        const fence2  = new Fence(fencePosition2, courtSize.y, 5 ,courtSize.x );
+        const fence2  = new Fence(fencePosition2, courtSize.y, this.lampPosts.height ,courtSize.x );
 
         this.threeGroup.add(fence2.threeGroup);
         this.threeGroup.add(fence.threeGroup);
@@ -65,7 +63,7 @@ class Court{
                 this.lampPosts.lightColor, 
                 0.3,
                 actualLampMatrix,
-                5
+                this.lampPosts.height
             )
 
             this.threeGroup.add(actualLamp.threeLamp);
