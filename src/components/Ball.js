@@ -6,6 +6,8 @@ class Ball{
         this.color = color;
         this.radius = radius;
         this.pos = pos;
+        this.velocity = new THREE.Vector2(0.01, -0.02);
+        this.acceleration = new THREE.Vector2(0.0000001, -0.0000002);
         
         this.initThree();
     }
@@ -18,6 +20,8 @@ class Ball{
 
         sphere.castShadow = true;
         sphere.receiveShadow = true;
+
+        // sphere.position.set(this.pos.x, this.pos.y, this.pos.z);
 
         this.threeGroup.add(sphere)
     }

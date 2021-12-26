@@ -13,16 +13,27 @@ import Game from './components/Game';
 import Ball from './components/Ball';
 import Player from './components/Player';
 
-let scene, camera, renderer, clock, gameObj, controls;
+let scene, camera, renderer, clock, gameObj = [], controls;
 
 const sizes = {
     width: window.innerWidth,
     height: window.innerHeight
 }
 
+
+const size = 20;
+const divisions = 2;
+
+let gridHelper;
+
 const init = () => {
     scene = new THREE.Scene();
     scene.fog = new THREE.Fog(0xffffff, 20,100)
+
+    gridHelper = new THREE.GridHelper( size, divisions );
+    gridHelper.rotation.x = Math.PI /2;
+    gridHelper.position.set(0,0,0.5)
+    scene.add( gridHelper );
 
     
     const canvas = document.querySelector('canvas.webgl');
@@ -90,11 +101,17 @@ const init = () => {
     const ambient = new THREE.AmbientLight( 0xffffff, 0.1 );
     scene.add( ambient );
 
+
+    
+    const axesHelper = new THREE.AxesHelper( 5 );
+    scene.add( axesHelper );
+
+
     const initGame = async () => {
 
 
-        gameObj = new Game(court, camera, new THREE.Vector3(10,20,0));
-        scene.add(gameObj.threeGroup);
+        gameObj[0] = new Game(court, camera, new THREE.Vector3(10,20,0));
+        scene.add(gameObj[0].threeGroup);
     }
     initGame();
 }
@@ -161,10 +178,15 @@ window.addEventListener('resize', () =>
 const tick = () =>
 {
     const elapsedTime = clock.getElapsedTime()
-    gameObj.update(elapsedTime);
+    gameObj.forEach(actualGame => {
+        actualGame.update(elapsedTime); 
+    });
+    
 
     renderer.render(scene, camera)
     controls.update();
+
+    gridHelper.position.set(gameObj[0].player1.threeGroup.position.x, 0,0.5)
 
     // Call tick again on the next frame
     window.requestAnimationFrame(tick)
@@ -172,6 +194,8 @@ const tick = () =>
 
 init();
 tick();
+
+console.log(gameObj[0].player1.threeGroup.position)
 
 document.querySelector("#btnCameraToggler").onclick = () => {
     camera = new THREE.PerspectiveCamera(45, sizes.width / sizes.height, 1, 1000);
