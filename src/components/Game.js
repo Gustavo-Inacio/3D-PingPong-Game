@@ -14,7 +14,7 @@ class Game{
 
         this.threeGroup.position.set( this.court.threeGroup.position.x,  this.court.threeGroup.position.y,  this.court.threeGroup.position.z) 
 
-        
+        this.playersScore = [0,0];
 
         this.initThree();
     }
@@ -32,6 +32,11 @@ class Game{
         this.gameBounding = new THREE.Box3().setFromObject(this.court.threeGroup);
         this.playerBounding = new THREE.Box3().setFromObject(this.player1.threeGroup);
         this.ballBounding = new THREE.Box3().setFromObject(this.ball.threeGroup);
+
+        this.lastDeltaGame = 0;
+
+        this.setPlayerScore(0,0);
+        this.setPlayerScore(1,0);
 
        this.handlePlayer1Motion();
     }
@@ -59,6 +64,8 @@ class Game{
     }
 
     ballMotion(delta){
+        delta = delta - this.lastDeltaGame;
+        console.log(delta)
         this.ball.velocity.set(
             this.ball.velocity.x += this.ball.acceleration.x * delta,
             this.ball.velocity.y += this.ball.acceleration.y * delta,
@@ -88,8 +95,7 @@ class Game{
         if(this.ballCollidePlayer()) {
             this.ball.velocity.y *= -1;
             this.ball.acceleration.y *= -1;
-            console.log("asa")
-
+    
             this.ball.threeGroup.position.set(
                 this.ball.threeGroup.position.x += this.ball.velocity.x * delta,
                 this.ball.threeGroup.position.y += this.ball.velocity.y * delta,
@@ -98,15 +104,23 @@ class Game{
 
         let gool = this.ballGool()
         if(gool.isGool){
-            console.log(gool.point)
+            let newScore = this.playersScore[gool.point] + 1;
+            this.setPlayerScore(gool.point, newScore); 
+            this.resetGame(delta);
         }
+    }
+
+    setPlayerScore(player, score){
+        this.playersScore[player] = score;
+
+        let scoreElment = document.querySelector(`#player${player}Score`);
+        scoreElment.innerHTML = this.playersScore[player];
     }
 
     ballCollideFence(){
         const gameSize = this.gameBounding.getSize(new THREE.Vector3);
         const ballSize = this.ballBounding.getSize(new THREE.Vector3);
 
-        // console.log(ballSize)
         return !(
                 (this.ball.threeGroup.position.x - (ballSize.x * 1.5) >= this.threeGroup.position.x - (gameSize.x / 2)) && 
                 (this.ball.threeGroup.position.x + (ballSize.x * 1.5) <= this.threeGroup.position.x + (gameSize.x / 2))
@@ -168,11 +182,23 @@ class Game{
         return toReturn;
     }
 
+    resetGame(delta){
+        this.ball.threeGroup.position.set(0,0, 0.5)
+        this.threeGroup.add(this.ball.threeGroup);
+
+        this.player1.threeGroup.position.set(0,-10,0);
+        this.player2.threeGroup.position.set(5,10,0);
+
+        this.lastDeltaGame = delta;
+
+        let vel = 0.001 * (Math.random() - 0.5) / 100000000;
+        this.ball.velocity.set(vel, vel)
+        this.ball.acceleration.set(vel / Math.abs(vel) * 0.001, vel / Math.abs(vel) * 0.001)
+    }
+
     update(delta){
         this.ballMotion(delta);
         this.simpleAIPlayerMovement(this.player2)
-        // this.simpleAIPlayerMovement(this.player1)
-        // this.ball.threeGroup.position.x -= 0.01 * delta;
     }
 }
 

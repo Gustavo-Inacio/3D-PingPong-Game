@@ -1,0 +1,59 @@
+*
+{
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body
+{
+    height: 100vh;
+    font-family: 'Poppins';
+}
+
+.webgl
+{
+    position: fixed;
+    top: 0;
+    left: 0;
+    outline: none;
+}
+
+#options{
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 2;
+}
+
+#scoreSection{
+    --scoreGap: 50;
+    background-color: rgba(82, 82, 82, 0.514);
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%);
+
+    &::before{
+        content: '';
+        height: 90%;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 1px;
+        background-color: #ffff;
+    }
+
+    .player-div{
+        display: flex;
+        flex-direction: column;
+        margin: 5px calc(var(--scoreGap) * 1px)  5px calc(var(--scoreGap) * 1px);
+        color: #ffff;
+
+        .playerScore{
+            text-align: center;
+        }
+    }
+}

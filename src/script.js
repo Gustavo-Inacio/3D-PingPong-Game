@@ -1,4 +1,4 @@
-import './style.css'
+import './style.scss'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
@@ -19,7 +19,6 @@ const sizes = {
     width: window.innerWidth,
     height: window.innerHeight
 }
-
 
 const size = 20;
 const divisions = 2;
