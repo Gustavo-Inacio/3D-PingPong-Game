@@ -176,7 +176,7 @@ window.addEventListener('resize', () =>
 
 const tick = () =>
 {
-    const elapsedTime = clock.getElapsedTime()
+    const elapsedTime = clock.getDelta()
     gameObj.forEach(actualGame => {
         actualGame.update(elapsedTime); 
     });

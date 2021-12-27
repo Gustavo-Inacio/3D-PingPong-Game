@@ -12,6 +12,8 @@ class Game{
         this.camera = camera;
         this.court = court;
 
+        this.allDelta = 0;
+
         this.threeGroup.position.set( this.court.threeGroup.position.x,  this.court.threeGroup.position.y,  this.court.threeGroup.position.z) 
 
         this.playersScore = [0,0];
@@ -63,14 +65,13 @@ class Game{
         player.threeGroup.position.set(this.ball.threeGroup.position.x, player.threeGroup.position.y, 0)
     }
 
-    ballMotion(delta){
-        delta = delta - this.lastDeltaGame;
-        console.log(delta)
+    ballMotion(){
+        let delta = this.allDelta;
+
         this.ball.velocity.set(
             this.ball.velocity.x += this.ball.acceleration.x * delta,
             this.ball.velocity.y += this.ball.acceleration.y * delta,
         )
-
         this.ball.threeGroup.position.set(
             this.ball.threeGroup.position.x += this.ball.velocity.x * delta,
             this.ball.threeGroup.position.y += this.ball.velocity.y * delta,
@@ -89,7 +90,11 @@ class Game{
             this.ball.velocity.set(
                 this.ball.velocity.x *= -1,
                 this.ball.velocity.y,
-            )
+            );
+            this.ball.acceleration.set(
+                this.ball.acceleration.x *= -1,
+                this.ball.acceleration.y,
+            );
         }
 
         if(this.ballCollidePlayer()) {
@@ -182,22 +187,25 @@ class Game{
         return toReturn;
     }
 
-    resetGame(delta){
+    resetGame(){
         this.ball.threeGroup.position.set(0,0, 0.5)
         this.threeGroup.add(this.ball.threeGroup);
 
         this.player1.threeGroup.position.set(0,-10,0);
         this.player2.threeGroup.position.set(5,10,0);
 
-        this.lastDeltaGame = delta;
+        this.lastDeltaGame = this.allDelta;
 
-        let vel = 0.001 * (Math.random() - 0.5) / 100000000;
+        let vel = 10 * ( Math.random() - 0.5) / 1;
+        if(vel > -0.05 && vel < 0.05) vel += (vel / Math.abs(vel)) * 0.05;
+        
         this.ball.velocity.set(vel, vel)
-        this.ball.acceleration.set(vel / Math.abs(vel) * 0.001, vel / Math.abs(vel) * 0.001)
+        this.ball.acceleration.set((vel / Math.abs(vel)) * 0.1 , (vel / Math.abs(vel) * 0.1))
     }
 
     update(delta){
-        this.ballMotion(delta);
+        this.allDelta = delta;
+        this.ballMotion();
         this.simpleAIPlayerMovement(this.player2)
     }
 }
