@@ -13,6 +13,10 @@ import Game from './components/Game';
 import Ball from './components/Ball';
 import Player from './components/Player';
 
+import audio from './assets/audio/circuit-shock/audio01.ogg'
+import audio1 from './assets/audio/circuit-shock/audio02.ogg'
+import audio3 from './assets/audio/circuit-shock/audio03.ogg'
+
 let scene, camera, renderer, clock, gameObj = [], controls;
 
 const sizes = {
@@ -23,16 +27,34 @@ const sizes = {
 const size = 20;
 const divisions = 2;
 
-let gridHelper;
+// let gridHelper;
+
+
+const tick = () =>
+{
+    const elapsedTime = clock.getDelta()
+    gameObj.forEach(actualGame => {
+        actualGame.update(elapsedTime); 
+    });
+    
+
+    renderer.render(scene, camera)
+    controls.update();
+
+    // gridHelper.position.set(gameObj[0].player1.threeGroup.position.x, 0,0.5)
+
+    // Call tick again on the next frame
+    window.requestAnimationFrame(tick)
+}
 
 const init = () => {
     scene = new THREE.Scene();
     scene.fog = new THREE.Fog(0xffffff, 20,100)
 
-    gridHelper = new THREE.GridHelper( size, divisions );
-    gridHelper.rotation.x = Math.PI /2;
-    gridHelper.position.set(0,0,0.5)
-    scene.add( gridHelper );
+    // gridHelper = new THREE.GridHelper( size, divisions );
+    // gridHelper.rotation.x = Math.PI /2;
+    // gridHelper.position.set(0,0,0.5)
+    // scene.add( gridHelper );
 
     
     const canvas = document.querySelector('canvas.webgl');
@@ -102,8 +124,8 @@ const init = () => {
 
 
     
-    const axesHelper = new THREE.AxesHelper( 5 );
-    scene.add( axesHelper );
+    // const axesHelper = new THREE.AxesHelper( 5 );
+    // scene.add( axesHelper );
 
 
     const initGame = async () => {
@@ -113,6 +135,11 @@ const init = () => {
         scene.add(gameObj[0].threeGroup);
     }
     initGame();
+
+
+    THREE.DefaultLoadingManager.onLoad = () => {
+        tick();
+    }
 }
 
 const addTestGeometry = () => {
@@ -174,33 +201,44 @@ window.addEventListener('resize', () =>
 });
 
 
-const tick = () =>
-{
-    const elapsedTime = clock.getDelta()
-    gameObj.forEach(actualGame => {
-        actualGame.update(elapsedTime); 
-    });
-    
-
-    renderer.render(scene, camera)
-    controls.update();
-
-    gridHelper.position.set(gameObj[0].player1.threeGroup.position.x, 0,0.5)
-
-    // Call tick again on the next frame
-    window.requestAnimationFrame(tick)
-}
-
 init();
-tick();
+// tick();
 
-console.log(gameObj[0].player1.threeGroup.position)
+// console.log(gameObj[0].player1.threeGroup.position)
+
+const audioListener = new THREE.AudioListener();
+// camera.add(audioListener);
+
+const eletricAudio = new THREE.Audio(audioListener)
+// scene.add(eletricAudio)
+const eletricAudio1 = new THREE.Audio(audioListener)
+// scene.add(eletricAudio1)
+const eletricAudio3 = new THREE.Audio(audioListener)
+// scene.add(eletricAudio3)
+
+const audioLoader = new THREE.AudioLoader();
+
+audioLoader.load(audio3, (audioBuffer3 ) => {
+    eletricAudio3.setBuffer(audioBuffer3);
+});
+
+audioLoader.load(audio1, (audioBuffer1 ) => {
+    eletricAudio1.setBuffer(audioBuffer1);
+    eletricAudio1.onEnded = () => {
+        eletricAudio3.play();
+    }
+});
+
+audioLoader.load(audio, (audioBuffer ) => {
+    eletricAudio.setBuffer(audioBuffer);
+    eletricAudio.onEnded = () => {
+        console.log("endend")
+        eletricAudio1.play();
+    }
+});
+
 
 document.querySelector("#btnCameraToggler").onclick = () => {
-    camera = new THREE.PerspectiveCamera(45, sizes.width / sizes.height, 1, 1000);
-    camera.position.set(0,0,15);
-    
-    scene.add(camera)
+    eletricAudio.play();
 }
-
 

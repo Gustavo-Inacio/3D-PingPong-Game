@@ -2,12 +2,23 @@ import * as THREE from 'three';
 import Ball from './Ball';
 import Player from './Player';
 
+import eleticSound from '../assets/audio/circuit-shock/audio01.ogg';
+import eleticSound02 from '../assets/audio/circuit-shock/audio02.ogg';
+import eleticSound03 from '../assets/audio/circuit-shock/audio03.ogg';
+
 class Game{
     constructor(court, camera, gameSize, ball = new Ball(), player1 = new Player(), player2 = new Player()){
         this.threeGroup = new THREE.Group();
         this.ball = ball;
-        this.player1 = player1;
-        this.player2 = player2;
+        this.balls = [
+            ball
+        ]
+        this.players = [
+            player1,
+            player2
+        ];
+        // this.player1 = player1;
+        // this.player2 = player2;
         this.gameSize = gameSize;
         this.camera = camera;
         this.court = court;
@@ -18,22 +29,82 @@ class Game{
 
         this.playersScore = [0,0];
 
+        this.gameTimeLine = [
+            {
+                name: 'flashLight',
+                method: () => {this.flashingLight()},
+                done: false,
+                action: {
+                    type: 'velocity',
+                    mark: 5
+                }
+            },
+            {
+                name: 'flashLight',
+                method: () => {this.flashingLight()},
+                done: false,
+                action: {
+                    type: 'velocity',
+                    mark: 15
+                }
+            },
+        ];
+
+        this.assets = {
+            audio : {
+                'shortCircuit0': undefined, 
+                'shortCircuit1': undefined, 
+                'shortCircuit2': undefined, 
+            }
+        }
+
         this.initThree();
+
+        
+    }
+
+    loadAssets(){
+        const audioLoader = new THREE.AudioLoader();
+        const audioListener = new THREE.AudioListener();
+
+        const shortCircuit = [
+            [eleticSound, new THREE.Audio(audioListener)],
+            [eleticSound02, new THREE.Audio(audioListener)],
+            [eleticSound03, new THREE.Audio(audioListener)],
+        ];
+
+        shortCircuit.forEach((audio, key) => {
+            audioLoader.load(audio[0], (audioBuffer) => {
+                audio[1].setBuffer(audioBuffer);
+
+                this.assets.audio[`shortCircuit${key}`] = audio[1];
+
+                if(key == 2){
+                    this.assets.audio[`shortCircuit${key}`].onEnded = () => {
+                        this.assets.audio[`shortCircuit${key}`].stop();
+                        this.changeLightsColor(new THREE.Color(0xffffffff));
+                    }
+                }
+            });
+        });
+
+
+        
     }
 
     initThree(){
-        this.ball.threeGroup.position.set(0,0, 0.5)
-        this.threeGroup.add(this.ball.threeGroup);
+        this.balls[0].threeGroup.position.set(0,0, 0.5)
+        this.threeGroup.add(this.balls[0].threeGroup);
 
-        this.player1.threeGroup.position.set(0,-10,0);
-        this.player2.threeGroup.position.set(5,10,0);
+        this.players[0].threeGroup.position.set(0,-10,0);
+        this.players[1].threeGroup.position.set(5,10,0);
 
-        this.threeGroup.add(this.player1.threeGroup);
-        this.threeGroup.add(this.player2.threeGroup);
+        this.threeGroup.add(this.players[0].threeGroup);
+        this.threeGroup.add(this.players[1].threeGroup);
 
         this.gameBounding = new THREE.Box3().setFromObject(this.court.threeGroup);
-        this.playerBounding = new THREE.Box3().setFromObject(this.player1.threeGroup);
-        this.ballBounding = new THREE.Box3().setFromObject(this.ball.threeGroup);
+        this.playerBounding = new THREE.Box3().setFromObject(this.players[0].threeGroup);
+        this.ballBounding = new THREE.Box3().setFromObject(this.balls[0].threeGroup);
 
         this.lastDeltaGame = 0;
 
@@ -41,6 +112,7 @@ class Game{
         this.setPlayerScore(1,0);
 
        this.handlePlayer1Motion();
+       this.loadAssets();
     }
 
     handlePlayer1Motion(){
@@ -56,25 +128,25 @@ class Game{
 
             let mousePosIn = (pos.x >= this.threeGroup.position.x - (gameSize.x / 2) + playerSize.x ) && (pos.x <= this.threeGroup.position.x + (gameSize.x /2 ) - playerSize.x );
             if(mousePosIn) 
-                this.player1.threeGroup.position.set(pos.x, - this.gameSize.y / 2, 0.5)
+                this.players[0].threeGroup.position.set(pos.x, - this.gameSize.y / 2, 0.5)
     
         })
     }
 
     simpleAIPlayerMovement(player){
-        player.threeGroup.position.set(this.ball.threeGroup.position.x, player.threeGroup.position.y, 0)
+        player.threeGroup.position.set(this.balls[0].threeGroup.position.x, player.threeGroup.position.y, 0.5)
     }
 
     ballMotion(){
         let delta = this.allDelta;
 
-        this.ball.velocity.set(
-            this.ball.velocity.x += this.ball.acceleration.x * delta,
-            this.ball.velocity.y += this.ball.acceleration.y * delta,
+        this.balls[0].velocity.set(
+            this.balls[0].velocity.x += this.balls[0].acceleration.x * delta,
+            this.balls[0].velocity.y += this.balls[0].acceleration.y * delta,
         )
-        this.ball.threeGroup.position.set(
-            this.ball.threeGroup.position.x += this.ball.velocity.x * delta,
-            this.ball.threeGroup.position.y += this.ball.velocity.y * delta,
+        this.balls[0].threeGroup.position.set(
+            this.balls[0].threeGroup.position.x += this.balls[0].velocity.x * delta,
+            this.balls[0].threeGroup.position.y += this.balls[0].velocity.y * delta,
         );
 
         this.handleCollision(delta);
@@ -82,30 +154,61 @@ class Game{
 
     handleCollision(delta){
         if(this.ballCollideFence()){
-            this.ball.threeGroup.position.set(
-                this.ball.threeGroup.position.x -= this.ball.velocity.x * delta,
-                this.ball.threeGroup.position.y -= this.ball.velocity.y * delta,
+            this.balls[0].threeGroup.position.set(
+                this.balls[0].threeGroup.position.x -= this.balls[0].velocity.x * delta,
+                this.balls[0].threeGroup.position.y -= this.balls[0].velocity.y * delta,
             );
 
-            this.ball.velocity.set(
-                this.ball.velocity.x *= -1,
-                this.ball.velocity.y,
+            this.balls[0].velocity.set(
+                this.balls[0].velocity.x *= -1,
+                this.balls[0].velocity.y,
             );
-            this.ball.acceleration.set(
-                this.ball.acceleration.x *= -1,
-                this.ball.acceleration.y,
+            this.balls[0].acceleration.set(
+                this.balls[0].acceleration.x *= -1,
+                this.balls[0].acceleration.y,
             );
         }
 
-        if(this.ballCollidePlayer()) {
-            this.ball.velocity.y *= -1;
-            this.ball.acceleration.y *= -1;
-    
-            this.ball.threeGroup.position.set(
-                this.ball.threeGroup.position.x += this.ball.velocity.x * delta,
-                this.ball.threeGroup.position.y += this.ball.velocity.y * delta,
-            );
-        }
+        this.players.forEach((actualPlayer) => {
+            this.balls.forEach((actualBall) => {
+                const colision = this.ballCollidePlayer(actualBall, actualPlayer);
+                if(colision.collided) {
+                    actualBall.threeGroup.position.set(
+                        actualBall.threeGroup.position.x -= actualBall.velocity.x * delta,
+                        actualBall.threeGroup.position.y -= actualBall.velocity.y * delta,
+                    ); // redo the action
+
+                    if(this.ballCollidePlayer(actualBall, actualPlayer).collided){ // if even redoing the action , it still collided, it means the ball has collided to the player sides
+                        actualBall.velocity.set( // collided in the playser sides, therefore it has to act like the fences
+                            actualBall.velocity.x *= -1,
+                            actualBall.velocity.y,
+                        );
+                        actualBall.acceleration.set(
+                            actualBall.acceleration.x *= -1,
+                            actualBall.acceleration.y,
+                        );
+                    }
+                    else{
+                        actualBall.velocity.set(
+                            actualBall.velocity.x,
+                            actualBall.velocity.y *= -1,
+                        );
+                        actualBall.acceleration.set(
+                            actualBall.acceleration.x ,
+                            actualBall.acceleration.y *= -1,
+                        );
+                    }
+            
+                    actualBall.threeGroup.position.set(
+                        actualBall.threeGroup.position.x += actualBall.velocity.x * delta,
+                        actualBall.threeGroup.position.y += actualBall.velocity.y * delta,
+                    );
+                }
+            });
+            
+        });
+
+        
 
         let gool = this.ballGool()
         if(gool.isGool){
@@ -127,32 +230,44 @@ class Game{
         const ballSize = this.ballBounding.getSize(new THREE.Vector3);
 
         return !(
-                (this.ball.threeGroup.position.x - (ballSize.x * 1.5) >= this.threeGroup.position.x - (gameSize.x / 2)) && 
-                (this.ball.threeGroup.position.x + (ballSize.x * 1.5) <= this.threeGroup.position.x + (gameSize.x / 2))
+                (this.balls[0].threeGroup.position.x - (ballSize.x * 1.5) >= this.threeGroup.position.x - (gameSize.x / 2)) && 
+                (this.balls[0].threeGroup.position.x + (ballSize.x * 1.5) <= this.threeGroup.position.x + (gameSize.x / 2))
         )
     }
 
-    ballCollidePlayer(){
+    ballCollidePlayer(ball, player){
         const playerSize = this.playerBounding.getSize(new THREE.Vector3());
         const ballSize = this.ballBounding.getSize(new THREE.Vector3);
 
-        let players = [
-            this.player1,
-            this.player2
-        ];
+        // let players = [
+        //     this.player1,
+        //     this.player2
+        // ];
 
-        let collided = false;
+        // let collided = false;
 
-        players.forEach((actualPlayer) => {
-            if(
-                (this.ball.threeGroup.position.x + ballSize.x / 2 >= actualPlayer.threeGroup.position.x - playerSize.x / 2) &&
-                (this.ball.threeGroup.position.x - ballSize.x / 2 <= actualPlayer.threeGroup.position.x + playerSize.x / 2) &&
-                (this.ball.threeGroup.position.y - ballSize.y / 2 <= actualPlayer.threeGroup.position.y + playerSize.y / 2) && 
-                (this.ball.threeGroup.position.y + ballSize.y / 2 >= actualPlayer.threeGroup.position.y - playerSize.y / 2)
-            ) collided = true;
-        });
+        // players.forEach((actualPlayer) => {
+        //     if(
+        //         (this.ball.threeGroup.position.x + ballSize.x / 2 >= actualPlayer.threeGroup.position.x - playerSize.x / 2) &&
+        //         (this.ball.threeGroup.position.x - ballSize.x / 2 <= actualPlayer.threeGroup.position.x + playerSize.x / 2) &&
+        //         (this.ball.threeGroup.position.y - ballSize.y / 2 <= actualPlayer.threeGroup.position.y + playerSize.y / 2) && 
+        //         (this.ball.threeGroup.position.y + ballSize.y / 2 >= actualPlayer.threeGroup.position.y - playerSize.y / 2)
+        //     ) collided = true;
+        // });
 
-        return collided;
+        let toReturn = {
+            collided: false,
+            sides: false
+        };
+
+        if(
+            (ball.threeGroup.position.x - ballSize.x / 2 <= player.threeGroup.position.x + playerSize.x / 2) &&
+            (ball.threeGroup.position.y - ballSize.y / 2 <= player.threeGroup.position.y + playerSize.y / 2) && 
+            (ball.threeGroup.position.y + ballSize.y / 2 >= player.threeGroup.position.y - playerSize.y / 2) && 
+            (ball.threeGroup.position.x + ballSize.x / 2 >= player.threeGroup.position.x - playerSize.x / 2)
+        ) toReturn.collided = true;
+
+        return toReturn;
     }
 
     ballGool(){
@@ -188,25 +303,128 @@ class Game{
     }
 
     resetGame(){
-        this.ball.threeGroup.position.set(0,0, 0.5)
-        this.threeGroup.add(this.ball.threeGroup);
+        this.balls[0].threeGroup.position.set(0,0, 0.5)
+        this.threeGroup.add(this.balls[0].threeGroup);
 
-        this.player1.threeGroup.position.set(0,-10,0);
-        this.player2.threeGroup.position.set(5,10,0);
+        this.gameTimeLine.forEach((elem) => {
+            elem.done = false;
+        });
+
+        this.players[0].threeGroup.position.set(0,-10,0);
+        this.players[1].threeGroup.position.set(5,10,0);
 
         this.lastDeltaGame = this.allDelta;
 
         let vel = 10 * ( Math.random() - 0.5) / 1;
         if(vel > -0.05 && vel < 0.05) vel += (vel / Math.abs(vel)) * 0.05;
         
-        this.ball.velocity.set(vel, vel)
-        this.ball.acceleration.set((vel / Math.abs(vel)) * 0.1 , (vel / Math.abs(vel) * 0.1))
+        this.balls[0].velocity.set(vel, vel)
+        this.balls[0].acceleration.set((vel / Math.abs(vel)) * 0.1 , (vel / Math.abs(vel) * 0.2))
+    }
+
+    changeBallColor(){
+        this.balls[0].threeGroup.children[0].material.color.set(`hsl(0, 100%, ${Math.floor(2000/ (Math.abs(this.balls[0].velocity.x) + Math.abs(this.balls[0].velocity.y)) /2)}%)`);
+    }
+
+    changeLightsColor(color){
+        let coutObj = this.court.threeGroup.children;
+        for(let i in coutObj){
+            if(coutObj[i].name == 'lampPost'){
+                const lampPostChildren = coutObj[i].children;
+                for(let i in lampPostChildren){
+                    if(lampPostChildren[i].name === "light"){
+                        lampPostChildren[i].color.set(color);
+                    }
+                }
+            }
+        }
+    }
+
+    flashingLight(){
+        const flashLight = (time)=>{
+            // lights of 0.5s
+            this.changeLightsColor(new THREE.Color(0,0,0));
+
+            //lights on 0.3s
+            setTimeout(() => {
+                this.changeLightsColor(new THREE.Color(10,20,10));
+            }, time);
+            // this.changeLightsColor(new THREE.Color(0xffffff));
+        }
+
+        const allAnimation = () => {
+            this.assets.audio['shortCircuit0'].play();
+            setTimeout(() => {
+                if(!this.assets.audio['shortCircuit1'].isPlaying)
+                    this.assets.audio['shortCircuit1'].play();
+                flashLight(300);
+                setTimeout(() => {
+                    flashLight(200);
+        
+                    setTimeout(() => {
+                        flashLight(100);
+        
+                        setTimeout(() => {
+                            flashLight(160);
+                            // this.changeLightsColor(new THREE.Color(0xffffff));
+                            setTimeout(() => {
+                                this.changeLightsColor(new THREE.Color(0,0,0));
+        
+                                setTimeout(() => {
+                                    if(this.assets.audio['shortCircuit1'].isPlaying)
+                                        requestAnimationFrame(allAnimation);
+                                    else{
+                                        this.assets.audio['shortCircuit2'].play();
+                                        flashLight((this.assets.audio['shortCircuit2'].source.buffer.duration * 1000) /2);
+                                        console.log(this.assets.audio['shortCircuit2'].source.buffer.duration)
+
+                                        console.log(this.assets.audio['shortCircuit2'])
+                                       
+
+                                        // setTimeout(() => {
+                                           
+                                        // }, 300);
+                                        
+                                    }
+                                    
+                                }, 500 );
+        
+                            }, 200);
+                        }, 300);
+                        // this.changeLightsColor(new THREE.Color(0xffffff));
+                    }, 700);
+                    
+                }, 310);
+            }, 2000)
+        }
+
+        allAnimation();
+    }
+
+    changeObjsColor()
+    {
+        this.changeBallColor();
+    }
+
+    runTimeLine(){
+        for(let i in this.gameTimeLine){
+            // console.log(i)
+            if(this.gameTimeLine[i].done === false && this.gameTimeLine[i].action.type === 'velocity' && this.gameTimeLine[i].action.mark < (Math.abs(this.balls[0].velocity.x) + Math.abs(this.balls[0].velocity.y))){
+                this.gameTimeLine[i].method();
+                this.gameTimeLine[i].done = true;
+
+            }
+        }
+            
     }
 
     update(delta){
         this.allDelta = delta;
         this.ballMotion();
-        this.simpleAIPlayerMovement(this.player2)
+        this.simpleAIPlayerMovement(this.players[1])
+        this.runTimeLine();
+        this.changeObjsColor();
+        // this.flashingLight();
     }
 }
 

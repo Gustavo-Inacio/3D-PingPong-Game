@@ -12,6 +12,7 @@ class LampPost{
         this.internsity = internsity;
         this.pos = pos;
         this.threeLamp = new THREE.Group();
+        this.threeLamp.name = 'lampPost';
         this.threeLamp.receiveShadow = true;
         this.threeLamp.castShadow = true;
         this.height = height;
@@ -63,6 +64,7 @@ class LampPost{
             this.color,
             this.internsity,
         );
+        light.name = 'light';
 
         const textureLoader = new THREE.TextureLoader();
 

@@ -7,7 +7,7 @@ class Ball{
         this.radius = radius;
         this.pos = pos;
         this.velocity = new THREE.Vector2(1, -2);
-        this.acceleration = new THREE.Vector2(0.0000001, -0.0000002);
+        this.acceleration = new THREE.Vector2(0.1, -0.2);
         
         this.initThree();
     }
