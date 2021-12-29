@@ -1,17 +1,14 @@
-# Three.js Starter
-Courtesy of Bruno Simon of https://threejs-journey.xyz/
+# PPG (PingPong Game)
+![image demo](demo-img.png)
 
-## Setup
-Download [Node.js](https://nodejs.org/en/download/).
-Run this followed commands:
+    This simple game was created to introduce myself to the 3D modeling world for web.
 
-``` bash
-# Install dependencies (only the first time)
-npm install
+## Technologies used to build it
+- [Three.js](https://threejs.org/) 
+- [Sass](https://sass-lang.com/)
+- HTML, CSS and JavaScript
+#
+## Assets sources
+  > Audio: <https://www.youtube.com/watch?v=POhLK_QIlqk>
 
-# Run the local server at localhost:8080
-npm run dev
-
-# Build for production in the dist/ directory
-npm run build
-```
+  > 3D Models: <https://sketchfab.com/3d-models?features=downloadable&sort_by=-likeCount>

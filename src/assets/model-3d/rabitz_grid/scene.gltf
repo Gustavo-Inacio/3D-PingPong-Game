@@ -97,7 +97,7 @@
   "materials": [
     {
       "doubleSided": true,
-      "name": "Material.002",
+      "name": "",
       "pbrMetallicRoughness": {
         "baseColorFactor": [
           0.8,
@@ -111,7 +111,7 @@
   ],
   "meshes": [
     {
-      "name": "Plane.001_Material.002_0",
+      "name": "",
       "primitives": [
         {
           "attributes": {
@@ -173,7 +173,7 @@
         0.0,
         1.0
       ],
-      "name": "0edea2faa1674adc89279bc6c5093ae5.fbx"
+      "name": ""
     },
     {
       "children": [
@@ -203,7 +203,7 @@
         0.0,
         1.0
       ],
-      "name": "Plane.001"
+      "name": ""
     },
     {
       "mesh": 0,

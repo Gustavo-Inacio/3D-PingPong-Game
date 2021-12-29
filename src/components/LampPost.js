@@ -51,7 +51,6 @@ class LampPost{
             
 
             this.threeLamp.add(module.scene);
-            // console.log(this.threeLamp)
         }, undefined, 
         () => {
             console.log("error on loading lamp post model");

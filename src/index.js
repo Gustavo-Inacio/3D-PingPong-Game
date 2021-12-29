@@ -1,21 +1,12 @@
 import './style.scss'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 import Court from './components/Court';
-
-import grassModel3d from './assets/model-3d/simple_grass/scene.gltf';
 
 import grass from './assets/img/grass.jpg';
 import grassNormal from './assets/img/grassNormal.png';
 import Game from './components/Game';
-import Ball from './components/Ball';
-import Player from './components/Player';
-
-import audio from './assets/audio/circuit-shock/audio01.ogg'
-import audio1 from './assets/audio/circuit-shock/audio02.ogg'
-import audio3 from './assets/audio/circuit-shock/audio03.ogg'
 
 let scene, camera, renderer, clock, gameObj = [], controls;
 
@@ -200,45 +191,4 @@ window.addEventListener('resize', () =>
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 });
 
-
 init();
-// tick();
-
-// console.log(gameObj[0].player1.threeGroup.position)
-
-const audioListener = new THREE.AudioListener();
-// camera.add(audioListener);
-
-const eletricAudio = new THREE.Audio(audioListener)
-// scene.add(eletricAudio)
-const eletricAudio1 = new THREE.Audio(audioListener)
-// scene.add(eletricAudio1)
-const eletricAudio3 = new THREE.Audio(audioListener)
-// scene.add(eletricAudio3)
-
-const audioLoader = new THREE.AudioLoader();
-
-audioLoader.load(audio3, (audioBuffer3 ) => {
-    eletricAudio3.setBuffer(audioBuffer3);
-});
-
-audioLoader.load(audio1, (audioBuffer1 ) => {
-    eletricAudio1.setBuffer(audioBuffer1);
-    eletricAudio1.onEnded = () => {
-        eletricAudio3.play();
-    }
-});
-
-audioLoader.load(audio, (audioBuffer ) => {
-    eletricAudio.setBuffer(audioBuffer);
-    eletricAudio.onEnded = () => {
-        console.log("endend")
-        eletricAudio1.play();
-    }
-});
-
-
-document.querySelector("#btnCameraToggler").onclick = () => {
-    eletricAudio.play();
-}
-

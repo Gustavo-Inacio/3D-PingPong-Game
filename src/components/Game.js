@@ -17,8 +17,6 @@ class Game{
             player1,
             player2
         ];
-        // this.player1 = player1;
-        // this.player2 = player2;
         this.gameSize = gameSize;
         this.camera = camera;
         this.court = court;
@@ -36,7 +34,7 @@ class Game{
                 done: false,
                 action: {
                     type: 'velocity',
-                    mark: 5
+                    mark: 13
                 }
             },
             {
@@ -45,7 +43,7 @@ class Game{
                 done: false,
                 action: {
                     type: 'velocity',
-                    mark: 15
+                    mark: 25
                 }
             },
         ];
@@ -66,6 +64,8 @@ class Game{
     loadAssets(){
         const audioLoader = new THREE.AudioLoader();
         const audioListener = new THREE.AudioListener();
+        
+        audioListener.setMasterVolume(.2);
 
         const shortCircuit = [
             [eleticSound, new THREE.Audio(audioListener)],
@@ -239,22 +239,6 @@ class Game{
         const playerSize = this.playerBounding.getSize(new THREE.Vector3());
         const ballSize = this.ballBounding.getSize(new THREE.Vector3);
 
-        // let players = [
-        //     this.player1,
-        //     this.player2
-        // ];
-
-        // let collided = false;
-
-        // players.forEach((actualPlayer) => {
-        //     if(
-        //         (this.ball.threeGroup.position.x + ballSize.x / 2 >= actualPlayer.threeGroup.position.x - playerSize.x / 2) &&
-        //         (this.ball.threeGroup.position.x - ballSize.x / 2 <= actualPlayer.threeGroup.position.x + playerSize.x / 2) &&
-        //         (this.ball.threeGroup.position.y - ballSize.y / 2 <= actualPlayer.threeGroup.position.y + playerSize.y / 2) && 
-        //         (this.ball.threeGroup.position.y + ballSize.y / 2 >= actualPlayer.threeGroup.position.y - playerSize.y / 2)
-        //     ) collided = true;
-        // });
-
         let toReturn = {
             collided: false,
             sides: false
@@ -366,7 +350,6 @@ class Game{
         
                         setTimeout(() => {
                             flashLight(160);
-                            // this.changeLightsColor(new THREE.Color(0xffffff));
                             setTimeout(() => {
                                 this.changeLightsColor(new THREE.Color(0,0,0));
         
@@ -375,23 +358,13 @@ class Game{
                                         requestAnimationFrame(allAnimation);
                                     else{
                                         this.assets.audio['shortCircuit2'].play();
-                                        flashLight((this.assets.audio['shortCircuit2'].source.buffer.duration * 1000) /2);
-                                        console.log(this.assets.audio['shortCircuit2'].source.buffer.duration)
-
-                                        console.log(this.assets.audio['shortCircuit2'])
-                                       
-
-                                        // setTimeout(() => {
-                                           
-                                        // }, 300);
-                                        
+                                        flashLight((this.assets.audio['shortCircuit2'].source.buffer.duration * 1000) /2);   
                                     }
                                     
                                 }, 500 );
         
                             }, 200);
                         }, 300);
-                        // this.changeLightsColor(new THREE.Color(0xffffff));
                     }, 700);
                     
                 }, 310);
@@ -408,7 +381,6 @@ class Game{
 
     runTimeLine(){
         for(let i in this.gameTimeLine){
-            // console.log(i)
             if(this.gameTimeLine[i].done === false && this.gameTimeLine[i].action.type === 'velocity' && this.gameTimeLine[i].action.mark < (Math.abs(this.balls[0].velocity.x) + Math.abs(this.balls[0].velocity.y))){
                 this.gameTimeLine[i].method();
                 this.gameTimeLine[i].done = true;
@@ -424,7 +396,6 @@ class Game{
         this.simpleAIPlayerMovement(this.players[1])
         this.runTimeLine();
         this.changeObjsColor();
-        // this.flashingLight();
     }
 }
 
