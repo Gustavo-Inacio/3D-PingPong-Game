@@ -2,6 +2,7 @@
 ![image demo](demo-img.png)
 
     This simple game was created to introduce myself to the 3D modeling world for web.
+    Try it out in <https://gustavo-inacio.github.io/3D-PingPong-Game/>
 
 ## Technologies used to build it
 - [Three.js](https://threejs.org/) 
